@@ -40,19 +40,14 @@ public class BotStarter {
      * @return A Move object
      */
     public Move doMove(BotState state) {
-       
-       // this.notRandom = 0;
         Player me = state.getPlayers().get(state.getMyName());
-        MoveType bestMoveType = state.getField().getBestMoveTypes();
+        Point snippetDest = state.getField().getSnippetPositions().get(0);
+        Node node = state.getField().moveTowards(snippetDest).get(0);
+        MoveType bestMoveType = state.getField().moveTo(node);
 
-        // Get random but valid move type
-       //MoveType randomMoveType = state.getField().getValidMoveTypes().get(this.random.nextInt(validMoveTypes.size()));
-        
-        //-------------------------------------------Lily Debugs
-       // System.out.println("Lily in BotStarter doMove Debugs: "+ validMoveTypes.get(validMoveTypes.size()-1)+"size" + validMoveTypes.size());
-        if (bestMoveType == null ) {
-            //return new Move(randomMoveType);
-            // ---------------------------------------------          Lily Debugs
+        //MoveType randomMoveType = state.getField().getValidMoveTypes().get(this.random.nextInt(validMoveTypes.size()));
+          
+        if (bestMoveType == null ) { 
             System.out.println("Lily in BotStarter doMove debugs: no valid move, pass");
             return new Move(); // No valid moves, pass
         }

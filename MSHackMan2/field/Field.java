@@ -4,6 +4,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 import move.MoveType;
+import node.Node;
  
 /**
  * field.Field
@@ -174,165 +175,64 @@ public class Field {
         ArrayList<Point> validMoveTypes = new ArrayList<>();
         int myX = this.myPosition.x;
         int myY = this.myPosition.y;
-       // int potentialX = 0;
-        //int potentialY = 0;
         
-
         Point up = new Point(myX, myY - 1);
         Point down = new Point(myX, myY + 1);
         Point left = new Point(myX - 1, myY);
         Point right = new Point(myX + 1, myY);
-       
-      /* 
-        potentialX = getSnippetPositions().get(0).x - myX;
-        potentialY = getSnippetPositions().get(0).y - myY;
-        
-        //validMoveTypes.clear();
-       //OPTIMIZE CODE LATER
-       //if up is best move 
-        if (potentialY < 0 )
-        {   
-            if(isPointValid(up)) {
-                //if up is valid
-                validMoveTypes.add(MoveType.UP);
-            }
-            else {
-                if(isPointValid(left)) 
-                {
-                    validMoveTypes.add(MoveType.LEFT);
-                }
-                if (isPointValid(right))
-                {
-                    validMoveTypes.add(MoveType.RIGHT);
-                }
-            }
-        }
-        
-        //if down is the best move
-       if (potentialY > 0 )
-        {   
-            if(isPointValid(down)) {
-                //if down is valid
-                validMoveTypes.add(MoveType.DOWN);
-            }
-            else {
-                if(isPointValid(left)) 
-                {
-                    validMoveTypes.add(MoveType.LEFT);
-                }
-                if (isPointValid(right))
-                {
-                    validMoveTypes.add(MoveType.RIGHT);
-                }
-            }
-        }
-        
-        //if left is best MoveType
-       if (potentialX < 0 )
-        {   
-            if(isPointValid(left)) {
-                //if left is valid
-                validMoveTypes.add(MoveType.LEFT);
-            }
-            else {
-                if(isPointValid(up)) 
-                {
-                    validMoveTypes.add(MoveType.UP);
-                }
-                if (isPointValid(down))
-                {
-                    validMoveTypes.add(MoveType.DOWN);
-                }
-            }
-        }
-        
-         if (potentialX > 0 )
-        {   
-            if(isPointValid(right)) {
-                //if right is valid
-                validMoveTypes.add(MoveType.RIGHT);
-            }
-            else {
-                if(isPointValid(up)) 
-                {
-                    validMoveTypes.add(MoveType.UP);
-                }
-                if (isPointValid(down))
-                {
-                    validMoveTypes.add(MoveType.DOWN);
-                }
-            }
-        }
-        */
-        //validMoveTypes.clear();
-        //get possible moveable points closest to snippets
-        if (isPointValid(up) ) validMoveTypes.add(up);
-        if (isPointValid(down) ) validMoveTypes.add(down);
-        if (isPointValid(left) ) validMoveTypes.add(left);
-        if (isPointValid(right) ) validMoveTypes.add(right);
-        
-      
-        //does it remove snippet if player gets it? **
-        //System.out.println("Lily from getValidMoveTypes Debugs: "+ potentialX + " / " + potentialY + " / " ); 
-
+     
         return validMoveTypes;
     }
     
-    //Pick the best move type out of getValidMoveTypes
-    public MoveType getBestMoveTypes() {
-        ArrayList<Point> bestMoveTypes = getValidMoveTypes();
-        Point destination = getSnippetPositions().get(0);
-        int leastDistance = distance(destination, bestMoveTypes.get(0));
-        Point bestMove = bestMoveTypes.get(0);
-        
-        for(int i = 0; i < bestMoveTypes.size(); i++) {
-            if(distance(destination, bestMoveTypes.get(i)) < leastDistance){
-                bestMove = bestMoveTypes.get(i);
-            }
-        }
-        
-        //System.out.println("Lily in bestmovetype: " + bestMoveTypes);
-        return whichMoveType(bestMove);
+    //return the list of nodes leading from our current positoin to the Point x
+    public ArrayList<Node> moveTowards(Point x){
+    	Node goal = new Node(x);
+    	Queue<Node> = new LinkedList<>();
+    	ArrayList<Node> explored = new ArrayList<Node>();
+    	ArrayList<Node> path new ArrayList<Node>();   
+    	
+    	queue.add(new Node(this.myPosition,getChildren(this.myPosition)));
+    	
+    	//BFS implemented
+    	while(!queue.isEmpty()) {
+    		Node current = queue.remove();
+    		
+    		//if the current node is the goal node, back track to create path
+    		if(current.equal(goal)) {
+    			while(current.getParent()!= null) {
+    				path.add(0, current);
+    				current = current.getParent();
+    			}
+    			return path;
+    		}
+	   
+	    	else {
+	    		explored.add(current);
+	    		for(Node z : current.getChildren()) {
+	    			//if it is not in explored or the queue, add the children of z to the queue
+	    			if(!explored.contains(z)&&!queue.contains(z)) {
+	    				z.setParent(current);
+		    			z.setChildren(getChildren(z.getPoint()));
+		    			queue.add(z);
+	    			}	
+	    		}
+	    	}
+    	return path;
     }
     
-    /*
-    * find relative distance between potential next move and destination
-    */
-    public int distance(Point destination, Point potential){
-        int distance = 0;
-        int deltaX = 0;
-        int deltaY = 0;
-        
-        deltaX = destination.x - potential.x;
-        deltaY = destination.y - potential.y;
-        
-        distance = (int) Math.sqrt((int) Math.pow (deltaX , 2) + (int) Math.pow (deltaY , 2));
-        
-        return distance;
-    }
-    
-    /*
-    * return movetype according to the coordinates
-    * movetype limited to left, right, up, and down
-    */
-    public MoveType whichMoveType(Point point){
-        int myX = this.myPosition.x;
-        int myY = this.myPosition.y;
-        
-        if(point.x == myX && point.y == myY - 1){
-            return MoveType.UP;
-        }
-        else if(point.x == myX && point.y == myY + 1){
-            return MoveType.DOWN;
-        }
-        else if(point.x == myX - 1 && point.y == myY){
-            return MoveType.LEFT;
-        }
-        else if(point.x == myX + 1 && point.y == myY){
-            return MoveType.RIGHT;
-        }
-        
-        return null;
+    //translates the nde next to us into the MoveType required to get there
+    public MoveType moveTo (Node x) {
+    	int myX = myPosition.x;
+    	int myY = myPosition.y;
+    	int nodeX = x.getPoint().x;
+    	int nodeY = y.getPoint().y;
+    	
+    	if(nodeY == myY-1) return moveType.UP;
+    	if(nodeY == myY+1) return moveType.DOWN;
+    	if(nodeX == myX-1) return moveType.LEFT;
+    	if(nodeX == myX+1) return moveType.RIGHT;
+    	
+    	return MoveType.PASS;
     }
     
     /**
